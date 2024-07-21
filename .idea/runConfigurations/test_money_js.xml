@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="test_money.js" type="NodeJSConfigurationType" path-to-node="wsl://Ubuntu@/usr/bin/node" nameIsGenerated="true" path-to-js-file="test_money.js" working-dir="$PROJECT_DIR$/js">
+    <method v="2" />
+  </configuration>
+</component>
