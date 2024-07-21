@@ -12,10 +12,20 @@ class Portfolio {
     evaluate(currency) {
         let total = this.moneys.reduce(
             (sum, money) => {
-                return sum + money.amount;
+                return sum + this.convert(money, currency);
             }, 0
         );
         return new Money(total, 'USD');
+    }
+
+    convert(money, currency) {
+        let eurToUsd = 1.2;
+
+        if (money.currency === currency) {
+            return money.amount;
+        }
+
+        return money.amount * eurToUsd;
     }
 }
 
