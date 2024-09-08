@@ -1,7 +1,7 @@
 const Money = require('./money');
 
 class Portfolio {
-    constructor(){
+    constructor() {
         this.moneys = [];
     }
 
@@ -10,12 +10,22 @@ class Portfolio {
     }
 
     evaluate(currency) {
-        let total = this.moneys.reduce(
-            (sum, money) => {
-                return sum + this.convert(money, currency);
-            }, 0
-        );
-        return new Money(total, currency);
+        let failures = [];
+        let total = this.moneys.reduce((sum, money) => {
+            let convertedAmount = this.convert(money, currency);
+
+            if (convertedAmount === undefined) {
+                failures.push(money.currency + '->' + currency);
+                return sum;
+            }
+            return sum + convertedAmount;
+        }, 0);
+
+        if (!failures.length) {
+            return new Money(total, currency);
+        }
+
+        throw new Error('Brakuje kursu (kursów) wymiany:[' + failures.join() + ']')
     }
 
     convert(money, currency) {
@@ -28,7 +38,13 @@ class Portfolio {
         }
 
         let key = money.currency + '->' + currency;
-        return money.amount * exchangeRates.get(key);
+        let rate = exchangeRates.get(key);
+
+        if (rate === undefined) {
+            return undefined;
+        }
+
+        return money.amount * rate;
     }
 }
 
