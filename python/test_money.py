@@ -52,7 +52,7 @@ class TestMoney(unittest.TestCase):
         portfolio.add(oneDollar, oneEuro, oneWon)
         with self.assertRaisesRegex(
             Exception,
-            "Brakuje kursu \(kursów\) wymiany:\[USD\->Kalganid,EUR\->Kalganid,KRW\->Kalganid]",
+            "Brakuje kursu \\(kursów\\) wymiany:\\[USD\\->Kalganid,EUR\\->Kalganid,KRW\\->Kalganid]",
         ):
             portfolio.evaluate("Kalganid")
 
