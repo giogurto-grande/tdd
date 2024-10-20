@@ -4,7 +4,7 @@ const Portfolio = require('./portfolio');
 const Bank = require('./bank');
 
 class MoneyTest {
-    constructor() {
+    setUp() {
         this.bank = new Bank();
         this.bank.addExchangeRate('EUR', 'USD', 1.2);
         this.bank.addExchangeRate('USD', 'KRW', 1100);
@@ -32,7 +32,7 @@ class MoneyTest {
         let portfolio = new Portfolio();
 
         portfolio.add(fiveDollars, tenDollars);
-        assert.deepStrictEqual(portfolio.evaluate(this.bank,'USD'), fifteenDollars);
+        assert.deepStrictEqual(portfolio.evaluate(this.bank, 'USD'), fifteenDollars);
     }
 
     testAdditionOfDollarsAndEuros() {
@@ -73,21 +73,26 @@ class MoneyTest {
         }, expectedError);
     }
 
-    testConversion() {
-        let bank = new Bank();
-        bank.addExchangeRate('EUR', 'USD', 1.2);
+    testConversionWithDifferentRatesBetweenTwoCurrencies() {
         let tenEuros = new Money(10, 'EUR');
 
         assert.deepStrictEqual(
-            bank.convert(tenEuros, "USD"),
+            this.bank.convert(tenEuros, 'USD'),
             new Money(12, 'USD')
+        );
+
+        this.bank.addExchangeRate('EUR', 'USD', 1.3);
+
+        assert.deepStrictEqual(
+            this.bank.convert(tenEuros, 'USD'),
+            new Money(13, 'USD')
         );
     }
 
     testConversionWithMissingExchangeRate() {
-        let bank = new Bank();
         let tenEuros = new Money(10, 'EUR');
         let expectedError = new Error('EUR->Kalganid');
+        let bank = this.bank;
 
         assert.throws(function () {
             bank.convert(tenEuros, 'Kalganid');
@@ -103,12 +108,23 @@ class MoneyTest {
         });
     }
 
+    randomizeTestOrder(testMethods) {
+        for (let i = testMethods.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+
+            [testMethods[i], testMethods[j]] = [testMethods[j], testMethods[i]];
+        }
+
+        return testMethods;
+    }
+
     runAllTests() {
-        let testMethods = this.getAllTestMethods();
+        let testMethods = this.randomizeTestOrder(this.getAllTestMethods());
         testMethods.forEach(m => {
             let method = Reflect.get(this, m);
             console.log('uruchamianie ' + m);
             try {
+                this.setUp();
                 Reflect.apply(method, this, []);
             } catch (e) {
                 if (e instanceof assert.AssertionError) {
