@@ -18,5 +18,5 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
       - name: Test
-        run: python py/test_money.py -v
+        run: python python/test_money.py -v
         shell: bash
